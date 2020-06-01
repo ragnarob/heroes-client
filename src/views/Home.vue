@@ -4,7 +4,7 @@
 
     <p v-if="!isDataLoaded">Loading data, hold on...</p>
 
-    <div v-else style="display: flex; flex-direction: column; align-items: center;" class="no-cursor">
+    <div v-else style="display: flex; flex-direction: column; align-items: center; width: 100%;" class="no-cursor">
       <div id="big-number-container" class="more-shadow-box">
         <div class="different-sized-text">
           <span class="big-number">{{totalStats.games}} </span> <p>games</p>
@@ -102,10 +102,10 @@
       </div>
     </div>
 
-      <div id="major-stats-container">
+      <div id="major-stats-container" style="width: 100%;">
         <div class="total-stats-container shadow-box">
           <h3>Wins by game type</h3>
-          <table>
+          <table class="scrolling-table">
             <tr v-for="(data, gameType) in totalStats.winRatesByGameType" :key="gameType">
               <td>{{gameType}}</td>
               <td><span class="different-sized-text">
@@ -120,7 +120,7 @@
 
         <div class="total-stats-container shadow-box">
           <h3>Wins by map</h3>
-          <table>
+          <table class="scrolling-table">
             <tr v-for="mapData in totalStats.winRatesByMap" :key="mapData.map">
               <td style="text-align: left;">{{mapData.map}}</td>
               <td><span class="different-sized-text">
@@ -135,7 +135,7 @@
 
         <div class="total-stats-container shadow-box">
           <h3>Wins by # of players</h3>
-          <table>
+          <table class="scrolling-table">
             <tr v-for="num in [2,3,4,5]" :key="num">
               <td>{{num}} players</td>
               <td><span class="different-sized-text">
@@ -152,7 +152,7 @@
       <div class="total-stats-container shadow-box" id="player-table-container">
         <h3>Player stats</h3>
         <p style="font-size: 11px; font-style: italic; margin: auto;">Det kommer mer her senere sånn du kan expande</p>
-        <table>
+        <table class="scrolling-table">
           <thead>
             <tr>
               <th>Name</th>
@@ -189,9 +189,9 @@
 
         <div v-for="(game, index) in recentGames" :key="index" class="one-game" :class="{'lose-game': !game.result, 'win-game': game.result}">
           <div class="title">
-            <div style="width: 100%; display: flex; flex-direction: row; align-items: center;">
+            <div style="width: 100%;">
               <p class="no-cursor">{{game.map}} - {{game.result ? 'Victory' : 'Defeat'}}</p>
-              <p style="font-size: 12px; margin-left: 15px; justify-self: end;" class="no-cursor">
+              <p style="font-size: 12px; margin-left: 2px;" class="no-cursor">
                 {{prettyDate(game.date)}}
               </p>
             </div>
@@ -292,7 +292,8 @@ export default {
     },
 
     prettyDate (date) {
-      return (new Date(date)).toDateString().substr(0,10)
+      let d = new Date(date)
+      return d.toDateString().substr(0,10) + ", " + d.toTimeString().substr(0,5)
     }
   },
 
@@ -335,6 +336,10 @@ h1 {
   text-align: center;
 }
 
+.scrolling-table {
+  width: 100%;
+}
+
 .win-game {
   border: 1px solid #6A82FB;
 }
@@ -352,7 +357,7 @@ h1 {
   }
   .players {
     font-size: 12px;
-    margin-left: 4px;
+    margin-left: 6px;
     td {
       text-align: left;
     }
@@ -374,6 +379,11 @@ table {
   &:hover {
     cursor: default;
   }
+  width: fit-content;
+  border-collapse: collapse;
+  display: block;
+  overflow-x: auto;
+  white-space: nowrap;
 }
 
 .total-stats-container {
@@ -381,6 +391,8 @@ table {
   width: fit-content;
   margin: 30px;
   padding: 10px;
+  white-space: nowrap;
+  max-width: 100%;
   h3 {
     text-align: center;
     font-size: 26px;
