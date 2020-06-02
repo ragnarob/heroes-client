@@ -154,7 +154,7 @@
         <p style="font-size: 11px; font-style: italic; margin: auto;">Det kommer mer her senere sånn du kan expande</p>
         <table class="scrolling-table">
           <thead>
-            <tr>
+            <tr class="no-hover">
               <th>Name</th>
               <th>Games</th>
               <th>Win %</th>
@@ -163,11 +163,13 @@
               <th>K A D</th>
               <th>K/D</th>
               <th>KA/D</th>
-              <th>Fav hero</th>
+              <th>Fav heroes</th>
             </tr>
           </thead>
           <tr v-for="player in playerStats" :key="player.name">
-            <td><b>{{player.name}}</b></td>
+            <td><p @click="selectPlayer(player)" class="player-name">
+              <b>{{player.name}}</b>
+            </p></td>
             <td>{{player.games}}</td>
             <td><b>{{player.winRate}}%</b></td>
             <td>{{player.mvpPercentage}}%</td>
@@ -175,10 +177,30 @@
             <td>{{player.avgKills}} / {{player.avgAssists}} / {{player.avgDeaths}}</td>
             <td>{{player.avgKD}}</td>
             <td>{{player.avgKAD}}</td>
-            <td style="text-align: left;">
-              <p v-for="heroString in favHeroesToStrings(player.heroes)" :key="heroString">
-                {{heroString}}
-              </p>
+            <td>
+              <table id="fav-heroes-table">
+                <tr v-for="hero in favHeroes(player.heroes)" :key="hero.name">
+                  <td style="padding: 0">{{hero.name}}</td>
+                  <td style="padding: 0 0 0 8px;">{{hero.games}} games</td>
+                  <td style="padding: 0 0 0 8px;">{{hero.winRate}}% win</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <div v-if="selectedPlayer != null" class="total-stats-container shadow-box" style="color: black;">
+        <div style="display: flex; flex-direction: row; justify-content; center; margin: auto; width: fit-content;">
+          <h3 style="margin: 0;">{{selectedPlayer.name}} details</h3>
+          <button @click="selectPlayer(null)" class="seethrough-button-dark" style="width: fit-content; height: fit-content; margin-left: 20px;">
+            Close
+          </button>
+        </div>
+        <table class="scrolling-table">
+          <tr>
+            <td>
+              {{selectedPlayer}}
             </td>
           </tr>
         </table>
@@ -222,6 +244,7 @@ export default {
       totalStats: [],
       playerStats: [],
       recentGames: [],
+      selectedPlayer: null,
       newGame: {
         'result': undefined,
         'map': undefined,
@@ -237,6 +260,10 @@ export default {
   },
 
   methods: {
+    selectPlayer (player) {
+      this.selectedPlayer = player
+    },
+
     createEmptyPlayer (name='') {
       return {
         'name': name,
@@ -282,6 +309,10 @@ export default {
       return strings
     },
 
+    favHeroes (heroes) {
+      return heroes.slice(0,3)
+    },
+
     percentToString (percentNumber) {
       if (percentNumber == null || percentNumber == undefined) {
         return '-'
@@ -325,6 +356,22 @@ export default {
 </script>
 
 <style lang="scss">
+$color1: #22c1c3;
+$color2: #fdbb2d;
+
+body {
+  background: #FC5C7D;  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to bottom right, #6A82FB, #FC5C7D);  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to bottom right, #6A82FB, #FC5C7D); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
+  background: -webkit-linear-gradient(to bottom right, #dd3e54, #6be585);  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to bottom right, #dd3e54, #6be585); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
+  background: -webkit-linear-gradient(to bottom right, #22c1c3, #fdbb2d);  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to bottom right, #22c1c3, #fdbb2d); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
+}
+
 h1, h2, h3, h4, p {
   margin: 0; padding: 0;
   width: fit-content;
@@ -341,10 +388,10 @@ h1 {
 }
 
 .win-game {
-  border: 1px solid #6A82FB;
+  border: 1px solid $color1;
 }
 .lose-game {
-  border: 1px solid #FC5C7D;
+  border: 1px solid $color2;
 }
 
 .one-game {
@@ -447,6 +494,17 @@ button {
   }
 }
 
+.seethrough-button-dark {
+  background-color: rgba(111,111,111,0.15);
+  color: #333;
+  font-size: 16px;
+  margin-top: 2px;
+  border: none;
+  &:hover {
+    background-color: transparent;
+  } 
+}
+
 #upload {
   background-color: rgba(0,0,0, 0.55);
   color: white;
@@ -504,9 +562,10 @@ button {
     th {
       padding: 0 4px;
     }
-    tr {
+    tr:not(.no-hover) {
       &:hover {
         background-color: rgba(255, 255, 255, 0.2);
+        // box-shadow: 2px 2px 10px 10px rgba(25, 25, 25, 0.04);
       }
     }
   }
@@ -544,10 +603,24 @@ button {
   }
 }
 
+.player-name {
+  text-decoration: underline;
+  text-decoration-color: $color1;
+  &:hover {
+    cursor: pointer;
+  }
+}
+
 table {
   border-collapse: collapse;
   td {
     text-align: center;
+  }
+}
+
+#fav-heroes-table {
+  td {
+    text-align: left !important;
   }
 }
 </style>
