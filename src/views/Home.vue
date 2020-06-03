@@ -156,8 +156,8 @@
           <thead>
             <tr class="no-hover">
               <th>Name</th>
-              <th>Games</th>
-              <th>Win %</th>
+              <th>#</th>
+              <th style="padding-left: 12px;">Win %</th>
               <th>MVP %</th>
               <th>Award %</th>
               <th>K A D</th>
@@ -167,11 +167,11 @@
             </tr>
           </thead>
           <tr v-for="player in playerStats" :key="player.name">
-            <td><p @click="selectPlayer(player)" class="player-name">
+            <td><p @click="selectPlayer(player)" class="clickable">
               <b>{{player.name}}</b>
             </p></td>
             <td>{{player.games}}</td>
-            <td><b>{{player.winRate}}%</b></td>
+            <td style="padding-left: 12px;"><b>{{player.winRate}}%</b> ({{player.wins}})</td>
             <td>{{player.mvpPercentage}}%</td>
             <td>{{player.awardPercentage}}%</td>
             <td>{{player.avgKills}} / {{player.avgAssists}} / {{player.avgDeaths}}</td>
@@ -191,19 +191,49 @@
       </div>
 
       <div v-if="selectedPlayer != null" class="total-stats-container shadow-box" style="color: black;">
-        <div style="display: flex; flex-direction: row; justify-content; center; margin: auto; width: fit-content;">
+        <div style="display: flex; flex-direction: row; justify-content; center; margin: 0 auto 0 auto; width: fit-content;">
           <h3 style="margin: 0;">{{selectedPlayer.name}} details</h3>
           <button @click="selectPlayer(null)" class="seethrough-button-dark" style="width: fit-content; height: fit-content; margin-left: 20px;">
             Close
           </button>
         </div>
-        <table class="scrolling-table">
-          <tr>
-            <td>
-              {{selectedPlayer}}
-            </td>
-          </tr>
-        </table>
+
+        <div style="display: flex; flex-direction: row; flex-wrap: wrap; justify-content: center;">
+          <div style="margin: 10px">
+            <h4>All hero stats</h4>
+            <table class="scrolling-table">
+              <thead>
+                <tr class="no-hover">
+                  <th>Hero</th>
+                  <th style="padding-right: 4px;">#</th>
+                  <th style="padding-left: 4px;">Win %</th>
+                  <th>K A D</th>
+                </tr>
+              </thead>
+              <tr v-for="hero in selectedPlayer.heroes" :key="hero.name">
+                <td style="text-align: left;">{{hero.name}}</td>
+                <td>{{hero.games}}</td>
+                <td>{{hero.winRate}}%</td>
+                <td>{{hero.avgKills}} / {{hero.avgAssists}} / {{hero.avgDeaths}}</td>
+              </tr>
+            </table>
+          </div>
+
+          <div style="margin: 10px;">
+            <h4>Awards</h4>
+            <table class="scrolling-table">
+              <tr v-for="award in selectedPlayer.awards" :key="award.award">
+                <td style="text-align: left;">{{award.award}}</td>
+                <td>{{award.percentage}}%</td>
+              </tr>
+            </table>
+          </div>
+
+          <div style="margin: 10px;">
+            <h4>Roles</h4>
+            <p>Coming soon!</p>
+          </div>
+        </div>
       </div>
 
       <div class="total-stats-container shadow-box" id="recent-games-container">
@@ -451,6 +481,12 @@ table {
   }
 }
 
+h4 {
+  font-size: 20px;
+  font-weight: 400;
+  margin: auto;
+}
+
 .shadow-box {
   box-shadow: 0 8px 16px 0px rgba(25, 25, 25, 0.12), 0px 8px 64px 0px rgba(25, 25, 25, 0.25);
   &:hover {
@@ -603,11 +639,13 @@ button {
   }
 }
 
-.player-name {
-  text-decoration: underline;
-  text-decoration-color: $color1;
+.clickable {
+  display: inline-block;
+  line-height: 0.88;
+  border-bottom: 3px dashed $color1;
   &:hover {
     cursor: pointer;
+    border-bottom: 3px solid $color2;
   }
 }
 
