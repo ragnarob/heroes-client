@@ -151,7 +151,6 @@
 
       <div class="total-stats-container shadow-box" id="player-table-container">
         <h3>Player stats</h3>
-        <p style="font-size: 11px; font-style: italic; margin: auto;">Det kommer mer her senere sånn du kan expande</p>
         <table class="scrolling-table">
           <thead>
             <tr class="no-hover">
@@ -179,7 +178,7 @@
             <td>{{player.avgKAD}}</td>
             <td>
               <table id="fav-heroes-table">
-                <tr v-for="hero in favHeroes(player.heroes)" :key="hero.name">
+                <tr v-for="hero in favHeroes(player.heroes)" :key="hero.name" class="no-hover">
                   <td style="padding: 0">{{hero.name}}</td>
                   <td style="padding: 0 0 0 8px;">{{hero.games}} games</td>
                   <td style="padding: 0 0 0 8px;">{{hero.winRate}}% win</td>
@@ -190,7 +189,7 @@
         </table>
       </div>
 
-      <div v-if="selectedPlayer != null" class="total-stats-container shadow-box" style="color: black;">
+      <div v-if="selectedPlayer != null" class="total-stats-container shadow-box" id="selected-player-stats">
         <div style="display: flex; flex-direction: row; justify-content; center; margin: 0 auto 0 auto; width: fit-content;">
           <h3 style="margin: 0;">{{selectedPlayer.name}} details</h3>
           <button @click="selectPlayer(null)" class="seethrough-button-dark" style="width: fit-content; height: fit-content; margin-left: 20px;">
@@ -235,6 +234,30 @@
           </div>
         </div>
       </div>
+
+
+
+      <div class="total-stats-container shadow-box" id="teams-stats">
+        <h3>Teams stats</h3>
+        <table class="scrolling-table">
+          <thead>
+            <tr class="no-hover">
+              <th>Players</th>
+              <th>Games</th>
+              <th style="padding-left: 8px;">Win %</th>
+            </tr>
+          </thead>
+          <tr v-for="team in teamStats" :key="team.playersString">
+            <td style="text-align: left;">{{team.playersString}}</td>
+            <td>{{team.games}}</td>
+            <td style="padding-left: 8px;">{{team.winPercent}}%</td>
+          </tr>
+        </table>
+      </div>
+
+
+
+
 
       <div class="total-stats-container shadow-box" id="recent-games-container">
         <h3>Most recent 10 games</h3>
@@ -365,6 +388,8 @@ export default {
     this.totalStats = allGames.totalStats
     this.playerStats = allGames.playerStats
     this.recentGames = allGames.recentGames
+    this.teamStats = allGames.teamStats
+
     for (let player of this.playerStats) {
       player.isExpanded = false
     }
@@ -449,6 +474,20 @@ tr:not(.no-hover) {
   cursor: default;
   &:hover {
     cursor: default;
+  }
+}
+
+#teams-stats {
+  color: black;
+  td {
+    padding: 4px 0;
+  }
+}
+
+#selected-player-stats {
+  color: black;
+  h4 {
+    margin-bottom: 4px;
   }
 }
 
