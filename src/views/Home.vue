@@ -411,8 +411,8 @@ export default {
 </script>
 
 <style lang="scss">
-$color1: #22c1c3;
-$color2: #fdbb2d;
+$color1: #e9c439;
+$color2: #f55353;
 
 body {
   background: #FC5C7D;  /* fallback for old browsers */
@@ -425,6 +425,8 @@ body {
   background: -webkit-linear-gradient(to bottom right, #22c1c3, #fdbb2d);  /* Chrome 10-25, Safari 5.1-6 */
   background: linear-gradient(to bottom right, #22c1c3, #fdbb2d); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 
+  background: -webkit-linear-gradient(to bottom right, #f55353, #e9c439);  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to bottom right, #f55353, #e9c439); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 }
 
 h1, h2, h3, h4, p {
