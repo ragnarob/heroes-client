@@ -1,6 +1,6 @@
 <template>
   <div class="home" style="display: flex; flex-direction: column; align-items: center;">
-    <h1 style="font-size: 60px;">Heroes of the Gløs</h1>
+    <h1>Heroes of the Gløs</h1>
 
     <p v-if="!isDataLoaded">Loading data, hold on...</p>
 
@@ -252,7 +252,7 @@
           </thead>
           <tr v-for="team in teamStats" :key="team.playersString">
             <td style="text-align: left;">
-              <p class="teamPlayers clickable" @click="initiateNewGameWithPlayers(team.playersString)">
+              <p class="teamPlayers clickable clickable-light" @click="initiateNewGameWithPlayers(team.playersString)">
                 {{team.playersString}}
               </p>
             </td>
@@ -449,37 +449,30 @@ export default {
 </script>
 
 <style lang="scss">
-$color1: #e9c439;
-$color2: #f55353;
+// Winter
+$color1: #616dac;
+$color2: #c5658d;
+
+// Fall
+// $color1: #e9c439;
+// $color2: #f55353;
 
 .body-fall {
   background: #FC5C7D;  /* fallback for old browsers */
-  background: -webkit-linear-gradient(to bottom right, #6A82FB, #FC5C7D);  /* Chrome 10-25, Safari 5.1-6 */
-  background: linear-gradient(to bottom right, #6A82FB, #FC5C7D); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-
-  background: -webkit-linear-gradient(to bottom right, #dd3e54, #6be585);  /* Chrome 10-25, Safari 5.1-6 */
-  background: linear-gradient(to bottom right, #dd3e54, #6be585); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-
-  background: -webkit-linear-gradient(to bottom right, #22c1c3, #fdbb2d);  /* Chrome 10-25, Safari 5.1-6 */
-  background: linear-gradient(to bottom right, #22c1c3, #fdbb2d); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-
   background: -webkit-linear-gradient(to bottom right, #f55353, #e9c439);  /* Chrome 10-25, Safari 5.1-6 */
   background: linear-gradient(to bottom right, #f55353, #e9c439); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 }
 
 .body-winter {
-  background: #FC5C7D;  /* fallback for old browsers */
-  background: -webkit-linear-gradient(to bottom right, #6A82FB, #FC5C7D);  /* Chrome 10-25, Safari 5.1-6 */
-  background: linear-gradient(to bottom right, #6A82FB, #FC5C7D); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  background: #4c8bf0;  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to bottom right, #4c8bf0, #9773eb, #FC5C7D);  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to bottom right, #4c8bf0, #9773eb, #FC5C7D); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+}
 
-  background: -webkit-linear-gradient(to bottom right, #dd3e54, #6be585);  /* Chrome 10-25, Safari 5.1-6 */
-  background: linear-gradient(to bottom right, #dd3e54, #6be585); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-
+.body-spring {
+  background: #22c1c3;  /* fallback for old browsers */
   background: -webkit-linear-gradient(to bottom right, #22c1c3, #fdbb2d);  /* Chrome 10-25, Safari 5.1-6 */
   background: linear-gradient(to bottom right, #22c1c3, #fdbb2d); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-
-  background: -webkit-linear-gradient(to bottom right, #f55353, #e9c439);  /* Chrome 10-25, Safari 5.1-6 */
-  background: linear-gradient(to bottom right, #f55353, #e9c439); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 }
 
 h1, h2, h3, h4, p {
@@ -491,6 +484,12 @@ h1 {
   margin: auto;
   padding-top: 10px;
   text-align: center;
+  font-size: 4rem;
+  @media (max-width: 860px) {
+    font-size: 2.25rem;
+    margin-top: 1.5rem;
+    margin-bottom: 1rem;
+  }
 }
 
 .scrolling-table {
@@ -748,6 +747,10 @@ button {
     cursor: pointer;
     border-bottom: 3px solid $color2;
   }
+}
+
+.clickable-light {
+  border-bottom-width: 1.5px !important;
 }
 
 table {
