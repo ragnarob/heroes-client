@@ -5,10 +5,7 @@
 </template>
 
 <style lang="scss">
-// @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;600&display=swap');
-
-@import url('https://fonts.googleapis.com/css2?family=Arvo&family=Montserrat:wght@300;600&display=swap');
-
+@import url('');
 
 body {
   color: white;

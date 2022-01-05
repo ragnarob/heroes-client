@@ -98,7 +98,7 @@
       <button @click="addPlayer" style="margin-top: 5px;">+ Add player</button>
       <div>
         <button @click="submitGame" style="margin-top: 15px;">Submit game</button>
-        <button @click="isAddingGame = false" style="margin-top: 15px; margin-left: 15px;">Cancel</button>
+        <button @click="cancelAddingGame()" style="margin-top: 15px; margin-left: 15px;">Cancel</button>
       </div>
     </div>
 
@@ -239,7 +239,10 @@
 
       <div class="total-stats-container shadow-box" id="teams-stats">
         <h3>Teams stats</h3>
-        <table class="scrolling-table">
+        <p style="text-align: center; margin: 0 auto 0.5rem auto; font-size: 12px;">
+          Click a team to initiate a new game registration with players
+        </p>
+        <table class="scrolling-table" style="margin: auto;">
           <thead>
             <tr class="no-hover">
               <th>Players</th>
@@ -248,7 +251,11 @@
             </tr>
           </thead>
           <tr v-for="team in teamStats" :key="team.playersString">
-            <td style="text-align: left;">{{team.playersString}}</td>
+            <td style="text-align: left;">
+              <p class="teamPlayers clickable" @click="initiateNewGameWithPlayers(team.playersString)">
+                {{team.playersString}}
+              </p>
+            </td>
             <td>{{team.games}}</td>
             <td style="padding-left: 8px;">{{team.winPercent}}%</td>
           </tr>
@@ -315,6 +322,23 @@ export default {
   methods: {
     selectPlayer (player) {
       this.selectedPlayer = player
+      setTimeout(() => {
+        const element = document.getElementById('selected-player-stats')
+        const elementRect = element.getBoundingClientRect()
+        const elementCenter = (elementRect.top + elementRect.bottom) / 2
+        const absoluteElementCenter = elementCenter + window.pageYOffset
+        const middle = absoluteElementCenter - (window.innerHeight / 2)
+        // document.getElementById('selected-player-stats').scrollIntoView({behavior: 'smooth'})
+        window.scrollTo({
+          top: middle,
+          behavior: 'smooth'
+        })
+      }, 10)
+    },
+
+    cancelAddingGame () {
+      this.isAddingGame = false
+      this.newGame.team = [this.createEmptyPlayer('Malann'), this.createEmptyPlayer()]
     },
 
     createEmptyPlayer (name='') {
@@ -326,6 +350,14 @@ export default {
         'deaths': undefined,
         'award': null,
       }
+    },
+
+    initiateNewGameWithPlayers (playersString) {
+      this.isAddingGame = true
+      this.newGame.team = playersString.split(', ').map(player => {
+        return this.createEmptyPlayer(player)
+      })
+      window.scrollTo(0,0)
     },
 
     addPlayer () {
@@ -343,7 +375,8 @@ export default {
         'gameData': this.newGame,
         'password': this.newGamePassword
       }
-      console.log(this.newGamePassword)
+      console.log("Passordet er 'Orphea' lol")
+
       let result = await fetch('/games', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
@@ -352,6 +385,7 @@ export default {
       result = await result.text()
 
       alert(result)
+      this.fetchData()
     },
 
     favHeroesToStrings (heroes) {
@@ -364,6 +398,33 @@ export default {
 
     favHeroes (heroes) {
       return heroes.slice(0,3)
+    },
+    
+    async fetchData () {
+      let allGamesReq = await fetch('/games')
+      let allGames = await allGamesReq.json()
+
+      this.totalStats = allGames.totalStats
+      this.playerStats = allGames.playerStats
+      this.recentGames = allGames.recentGames
+      this.teamStats = allGames.teamStats
+
+      for (let player of this.playerStats) {
+        player.isExpanded = false
+      }
+      
+      for (let map of this.totalStats.winRatesByMap) {
+        if (map.map === 'Tomb of the Spider Queen') {
+          map.map = 'Tomb ot Spider Queen'
+        }
+      }
+
+      this.isDataLoaded = true
+
+      let theLegalValuesReq = await fetch('/legal-values')
+      this.legalValues = await theLegalValuesReq.json()
+
+      this.newGame.date = (new Date()).toISOString().substr(0,16)
     },
 
     percentToString (percentNumber) {
@@ -382,30 +443,7 @@ export default {
   },
 
   async mounted () {
-    let allGamesReq = await fetch('/games')
-    let allGames = await allGamesReq.json()
-
-    this.totalStats = allGames.totalStats
-    this.playerStats = allGames.playerStats
-    this.recentGames = allGames.recentGames
-    this.teamStats = allGames.teamStats
-
-    for (let player of this.playerStats) {
-      player.isExpanded = false
-    }
-    
-    for (let map of this.totalStats.winRatesByMap) {
-      if (map.map === 'Tomb of the Spider Queen') {
-        map.map = 'Tomb ot Spider Queen'
-      }
-    }
-
-    this.isDataLoaded = true
-
-    let theLegalValuesReq = await fetch('/legal-values')
-    this.legalValues = await theLegalValuesReq.json()
-
-    this.newGame.date = (new Date()).toISOString().substr(0,16)
+    this.fetchData()
   }
 }
 </script>
@@ -414,7 +452,22 @@ export default {
 $color1: #e9c439;
 $color2: #f55353;
 
-body {
+.body-fall {
+  background: #FC5C7D;  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to bottom right, #6A82FB, #FC5C7D);  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to bottom right, #6A82FB, #FC5C7D); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
+  background: -webkit-linear-gradient(to bottom right, #dd3e54, #6be585);  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to bottom right, #dd3e54, #6be585); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
+  background: -webkit-linear-gradient(to bottom right, #22c1c3, #fdbb2d);  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to bottom right, #22c1c3, #fdbb2d); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
+  background: -webkit-linear-gradient(to bottom right, #f55353, #e9c439);  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to bottom right, #f55353, #e9c439); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+}
+
+.body-winter {
   background: #FC5C7D;  /* fallback for old browsers */
   background: -webkit-linear-gradient(to bottom right, #6A82FB, #FC5C7D);  /* Chrome 10-25, Safari 5.1-6 */
   background: linear-gradient(to bottom right, #6A82FB, #FC5C7D); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
@@ -442,6 +495,13 @@ h1 {
 
 .scrolling-table {
   width: 100%;
+}
+
+.teamPlayers {
+  text-align: left;
+  &:hover {
+    cursor: pointer;
+  }
 }
 
 .win-game {
