@@ -407,7 +407,7 @@ export default {
       this.totalStats = allGames.totalStats
       this.playerStats = allGames.playerStats
       this.recentGames = allGames.recentGames
-      this.teamStats = allGames.teamStats
+      this.teamStats = allGames.teamStats.sort((ts1, ts2) => ts1.games > ts2.games ? -1 : 1)
 
       for (let player of this.playerStats) {
         player.isExpanded = false
