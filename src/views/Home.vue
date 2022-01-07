@@ -10,7 +10,7 @@
           <span class="big-number">{{totalStats.games}} </span> <p>games</p>
         </div>
         <div class="different-sized-text">
-          <span class="big-number">{{totalStats.winRate * 100}}% </span> <p>win rate</p>
+          <span class="big-number">{{(Math.round(totalStats.winRate*1000))/10}}% </span> <p>win rate</p>
         </div>
       </div>
 
