@@ -16,13 +16,11 @@ body {
   font-family: 'Montserrat', sans-serif;
   background-repeat: no-repeat;
   overflow-x: hidden;
+  font-weight: 300;
 
   ::selection {
     background-color: rgba(255,255,255,0.6);
   } 
-}
-body, div, html, table, button, span, td, th, tbody {
-  box-sizing: border-box;
 }
 
 .bold {

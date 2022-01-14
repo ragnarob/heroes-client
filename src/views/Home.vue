@@ -1,5 +1,5 @@
 <template>
-  <div class="home" style="display: flex; flex-direction: column; align-items: center;">
+  <div class="home dark" style="display: flex; flex-direction: column; align-items: center;">
     <h1>Heroes of the Gløs</h1>
 
     <p v-if="!isDataLoaded">Loading data, hold on...</p>
@@ -19,49 +19,39 @@
     </button>
 
     <div v-else id="upload" class="more-shadow-box" style="margin-top: 30px;">
-      <p><b>Game data</b></p>
-      <table id="newGameFirstTable">
-        <tr class="no-hover">
-          <td colspan="2" style="text-align: center;">
-            <input type="radio" v-model="newGame.result" :value="1" id="winYes"/>
-            <label for="winYes">Victory</label>
-            <input type="radio" v-model="newGame.result" :value="0" id="winNo" style="margin-left: 10px;"/>
-            <label for="winNo">Defeat</label>
-          </td>
-        </tr>
+      <p><b>New game</b></p>
+      <div id="newGameFirstTable">
+        <div style="display: flex; gap: 1.5rem; justify-content: center; margin-top: 0.5rem; margin-bottom: -0.5rem;">
+          <Radio label="Victory" :currentValue="newGame.result" value="1"  @onChange="onResultChange"/>
+          <Radio label="Defeat" :currentValue="newGame.result" value="0"  @onChange="onResultChange"/>
+        </div>
 
-        <tr class="no-hover">
-          <td>Map</td>
-          <td>
-            <select v-model="newGame.map">
-              <option v-for="map in legalValues.maps" :key="map" :value="map">{{map}}</option>
-            </select>
-          </td>
-        </tr>
+        <Select :options="legalValues.maps.map(map => ({text: map, value: map}))"
+                title="Map"
+                isSearchable
+                searchPlaceholder="Map"
+                @change="onMapSelect"
+                @searchSelectedClicked="() => newGame.map = undefined"
+                :resetValue="mapResetValue"
+                :searchSelected="newGame.map"
+                isFullWidth
+                style="width: 15rem;"/> 
 
-        <tr class="no-hover">
-          <td>Game type</td>
-          <td>
-            <select v-model="newGame.gameType">
-              <option v-for="gameType in legalValues.gameTypes" :key="gameType" :value="gameType">{{gameType}}</option>
-            </select>
-          </td>
-        </tr>
+        <Select :options="legalValues.gameTypes.map(gt => ({text: gt, value: gt}))"
+                title="Game type"
+                @change="onGameTypeChange"
+                :resetValue="inputsResetValue"
+                isFullWidth/> 
 
-        <tr class="no-hover">
-          <td>Date</td>
-          <td>
-            <input type="datetime-local" :value="newGame.date"/>
-          </td>
-        </tr>
+        <DateTimePicker :value="newGame.date"
+                        @change="onDateChange"
+                        title="Date &amp; time"/>
 
-        <tr class="no-hover">
-          <td>Password</td>
-          <td>
-            <input type="text" v-model="newGamePassword" style="width: 100px;"/>
-          </td>
-        </tr>
-      </table>
+        <TextInput @change="newVal => newGamePassword = newVal"
+                    title="Password"
+                    textAlign="left"
+                    style="width: 100%;"/>
+      </div>
 
       <p style="margin-top: 12px;"><b>Players</b></p>
       <table>
@@ -91,14 +81,22 @@
             </select>
           </td>
           <td>
-            <button @click="removePlayer(index)" style="margin-left: 10px;">x</button>
+            <button @click="removePlayer(index)" style="margin-left: 10px;" class="iconButton">
+              <CloseIcon title=""/>
+            </button>
           </td>
         </tr>
       </table>
-      <button @click="addPlayer" style="margin-top: 5px;">+ Add player</button>
-      <div>
-        <button @click="submitGame" style="margin-top: 15px;">Submit game</button>
-        <button @click="cancelAddingGame()" style="margin-top: 15px; margin-left: 15px;">Cancel</button>
+      <button @click="addPlayer" style="margin-top: 0.5rem;">
+        + Add player
+      </button>
+      <div style="display: flex; flex-direction: row; margin-top: 1.5rem; gap: 1rem;">
+        <button @click="cancelAddingGame()">
+          Cancel
+        </button>
+        <button @click="submitGame">
+          Submit game
+        </button>
       </div>
     </div>
 
@@ -293,11 +291,20 @@
 </template>
 
 <script>
-// @ is an alias to /src
+import TextInput from '@/components/TextInput.vue'
+import Select from '@/components/Select.vue'
+import Radio from '@/components/Radio.vue'
+import DateTimePicker from '@/components/DateTimePicker.vue'
+import CloseIcon from 'vue-material-design-icons/Close.vue'
+
 export default {
   name: 'Home',
 
-  data: function () {
+  components: {
+    TextInput, Select, Radio, DateTimePicker, CloseIcon,
+  },
+
+  data () {
     return {
       isAddingGame: false,
       isDataLoaded: false,
@@ -305,21 +312,35 @@ export default {
       playerStats: [],
       recentGames: [],
       selectedPlayer: null,
-      newGame: {
-        'result': undefined,
-        'map': undefined,
-        'date': undefined,
-        'gameType': undefined,
-        'team': [this.createEmptyPlayer('Malann'), this.createEmptyPlayer()],
-      },
+      newGame: this.makeDefaultEmptyGame(),
       newGamePassword: '',
       legalValues: {
         'maps': [], 'gameTypes': [], 'heroes': [], 'awards': []
-      }
+      },
+      inputsResetValue: null,
+      mapResetValue: null,
     }
   },
 
   methods: {
+    onMapSelect (newMap) {
+      this.newGame.map = newMap
+      this.mapResetValue = Math.random().toString()
+    },
+
+    onGameTypeChange (newVal) {
+      this.newGame.gameType = newVal
+    },
+
+    onResultChange (newResult) {
+      this.newGame.result = newResult
+      console.log(newResult)
+    },
+
+    onDateChange (newVal) {
+      this.newGame.date = newVal
+    },
+
     selectPlayer (player) {
       this.selectedPlayer = player
       setTimeout(() => {
@@ -372,7 +393,7 @@ export default {
 
     async submitGame () {
       let requestBody = {
-        'gameData': this.newGame,
+        'gameData': {...this.newGame, result: Number(this.newGame.result)},
         'password': this.newGamePassword
       }
       console.log("Passordet er 'Orphea' lol")
@@ -382,10 +403,15 @@ export default {
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(requestBody)
       })
-      result = await result.text()
 
+      result = await result.text()
       alert(result)
-      this.fetchData()
+      if (result.includes('Success')) { // LOL.
+        this.isAddingGame = false
+        this.newGame = this.makeDefaultEmptyGame()
+        this.fetchData()
+      }
+
     },
 
     favHeroesToStrings (heroes) {
@@ -427,6 +453,16 @@ export default {
       this.newGame.date = (new Date()).toISOString().substr(0,16)
     },
 
+    makeDefaultEmptyGame () {
+      return {
+        'result': '',
+        'map': undefined,
+        'date': undefined,
+        'gameType': undefined,
+        'team': [this.createEmptyPlayer('Malann'), this.createEmptyPlayer()],
+      }
+    },
+
     percentToString (percentNumber) {
       if (percentNumber == null || percentNumber == undefined) {
         return '-'
@@ -449,13 +485,12 @@ export default {
 </script>
 
 <style lang="scss">
-// Winter
-$color1: #616dac;
-$color2: #c5658d;
+@import "../scss/colors.scss";
 
-// Fall
-// $color1: #e9c439;
-// $color2: #f55353;
+input, select {
+  margin: 0;
+  padding: 0;
+}
 
 .body-fall {
   background: #FC5C7D;  /* fallback for old browsers */
@@ -464,15 +499,21 @@ $color2: #c5658d;
 }
 
 .body-winter {
-  background: #4c8bf0;  /* fallback for old browsers */
-  background: -webkit-linear-gradient(to bottom right, #4c8bf0, #9773eb, #FC5C7D);  /* Chrome 10-25, Safari 5.1-6 */
-  background: linear-gradient(to bottom right, #4c8bf0, #9773eb, #FC5C7D); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  background: $seasonColor1;  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to bottom right, $seasonColor1, #9773eb, $seasonColor2);  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to bottom right, $seasonColor1, #9773eb, $seasonColor2); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 }
 
 .body-spring {
   background: #22c1c3;  /* fallback for old browsers */
   background: -webkit-linear-gradient(to bottom right, #22c1c3, #fdbb2d);  /* Chrome 10-25, Safari 5.1-6 */
   background: linear-gradient(to bottom right, #22c1c3, #fdbb2d); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+}
+
+.cursorPointer {
+  &:hover {
+    cursor: pointer;
+  }
 }
 
 h1, h2, h3, h4, p {
@@ -492,6 +533,11 @@ h1 {
   }
 }
 
+input {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1rem;
+}
+
 .scrolling-table {
   width: 100%;
 }
@@ -504,10 +550,10 @@ h1 {
 }
 
 .win-game {
-  border: 1px solid $color1;
+  border: 1px solid $theme1;
 }
 .lose-game {
-  border: 1px solid $color2;
+  border: 1px solid $theme2;
 }
 
 .one-game {
@@ -563,6 +609,19 @@ table {
   white-space: nowrap;
 }
 
+.iconButton {
+  border-radius: 40px;
+  padding: 0.5rem;
+  width: 2rem;
+  height: 2rem;
+  span {
+    margin-right: 4px;
+  }
+  svg {
+    margin-bottom: 4px;
+  }
+}
+
 .total-stats-container {
   background: rgba(255, 255, 255, 0.5);
   width: fit-content;
@@ -587,6 +646,22 @@ h4 {
   margin: auto;
 }
 
+.material-design-icon { 
+  display: inline-flex;
+  align-self: center;
+  position: relative;
+  height: 1rem;
+  width: 1rem;
+}
+
+.material-design-icon>.material-design-icon__svg {
+  height: 1rem;
+  width: 1rem;
+  fill: currentColor;
+  position: absolute;
+  bottom: -0.125rem;
+}
+
 .shadow-box {
   box-shadow: 0 8px 16px 0px rgba(25, 25, 25, 0.12), 0px 8px 64px 0px rgba(25, 25, 25, 0.25);
   &:hover {
@@ -597,26 +672,6 @@ h4 {
   box-shadow: 0 8px 16px 0px rgba(25, 25, 25, 0.20), 0px 8px 64px 0px rgba(25, 25, 25, 0.40);
   &:hover {
     box-shadow: 0 8px 16px 0px rgba(25, 25, 25, 0.28), 0px 10px 78px 0px rgba(25, 25, 25, 0.48);
-  }
-}
-
-button {
-  font-size: 14px;
-  box-sizing: border-box;
-  border: none;
-  padding: 4px 8px;
-  border-radius: 4px;
-  background-color: #fff;
-  color: black;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-
-  &:hover {
-    cursor: pointer;
-    background-color: #eaeaea;
-    box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
-    &.button-disabled {
-      box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-    }
   }
 }
 
@@ -642,7 +697,7 @@ button {
 }
 
 #upload {
-  background-color: rgba(0,0,0, 0.55);
+  background-color: rgba(0,0,0, 0.75);
   color: white;
   width: fit-content;
   margin: auto;
@@ -730,22 +785,18 @@ button {
 }
 
 #newGameFirstTable {
-  td {
-    text-align: left;
-    &:first-child {
-      text-align: right;
-      padding-right: 8px;
-    }
-  }
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
 }
 
 .clickable {
   display: inline-block;
   line-height: 0.88;
-  border-bottom: 3px dashed $color1;
+  border-bottom: 3px dashed $theme1;
   &:hover {
     cursor: pointer;
-    border-bottom: 3px solid $color2;
+    border-bottom: 3px solid $theme2;
   }
 }
 
@@ -758,6 +809,51 @@ table {
   td {
     text-align: center;
   }
+}
+
+button {
+  font-size: 14px;
+  box-sizing: border-box;
+  border: none;
+  padding: 4px 8px;
+  border-radius: 4px;
+  background-color: #fff;
+  color: black;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+
+  &:hover {
+    cursor: pointer;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+    &.button-disabled {
+      box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+    }
+  }
+}
+
+button {
+  background: rgba(255, 255, 255, 0.9);
+  color: #000;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1rem;
+  font-weight: 400;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 4px 10px 0 rgba(25, 25, 25, 0.06), 0 4px 16px 0 rgba(25, 25, 25, 0.15);
+  span {
+    margin-bottom: -5px;
+    margin-right: 0.3rem;
+  }
+  
+  background: transparentize($color: $theme1, $amount: 0.5);
+  color: white;
+  &:hover {
+    background: transparentize($color: $theme1, $amount: 0.2);
+    box-shadow: 0 8px 16px 0 rgba(25,25,25,.12), 0 8px 32px 0 rgba(25,25,25,.25);
+  }
+
+  transition: all 100ms;
 }
 
 #fav-heroes-table {
