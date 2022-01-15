@@ -35,7 +35,7 @@
                 :resetValue="mapResetValue"
                 :searchSelected="newGame.map"
                 isFullWidth
-                style="width: 15rem;"/> 
+                style="width: 15rem;"/>
 
         <Select :options="legalValues.gameTypes.map(gt => ({text: gt, value: gt}))"
                 title="Game type"
@@ -53,40 +53,57 @@
                     style="width: 100%;"/>
       </div>
 
-      <p style="margin-top: 12px;"><b>Players</b></p>
-      <table>
-        <tr v-for="(player, index) in newGame.team" :key="index" class="no-hover">
-          <td>
-            Name: <input type="text" v-model="player.name" style="width: 100px;"/>
-          </td>
-          <td>
-            Hero:
-            <select v-model="player.hero">
-              <option v-for="hero in legalValues.heroes" :key="hero" :value="hero">{{hero}}</option>
-            </select>
-          </td>
-          <td>
-            K: <input type="number" v-model="player.kills" style="width: 45px;"/>
-          </td>
-          <td>
-            A: <input type="number" v-model="player.assists" style="width: 45px;"/>
-          </td>
-          <td>
-            D: <input type="number" v-model="player.deaths" style="width: 45px;"/>
-          </td>
-          <td>
-            Award:
-            <select v-model="player.award">
-              <option v-for="award in legalValues.awards" :key="award" :value="award">{{award}}</option>
-            </select>
-          </td>
-          <td>
-            <button @click="removePlayer(index)" style="margin-left: 10px;" class="iconButton">
-              <CloseIcon title=""/>
-            </button>
-          </td>
-        </tr>
-      </table>
+      <p style="margin-top: 12px;">
+        <b>Players</b>
+      </p>
+      <div style="margin: 0.5rem 0; display: flex; flex-direction: column; gap: 0.75rem;">
+        <div v-for="(player, index) in newGame.team" :key="index" style="display: flex; gap: 0.5rem; align-items: flex-end;">
+          <TextInput @change="newVal => player.name = newVal"
+                      title="Name"
+                      style="width: 9rem;"
+                      textAlign="left"/>
+          <Select :options="legalValues.heroes.map(hero => ({text: hero, value: hero}))"
+                  title="Hero"
+                  isSearchable
+                  @change="newVal => {
+                    player.hero = newVal;
+                    heroResetValue = Math.random().toString()
+                  }"
+                  style="width: 11rem;"
+                  @searchSelectedClicked="() => player.hero = undefined"
+                  :resetValue="heroResetValue"
+                  :searchSelected="player.hero"/>
+          <TextInput @change="newVal => player.kills = newVal"
+                      title="K"
+                      type="number"
+                      style="width: 3rem;"
+                      textAlign="left"/>
+          <TextInput @change="newVal => player.assists = newVal"
+                      title="A"
+                      type="number"
+                      style="width: 3rem;"
+                      textAlign="left"/>
+          <TextInput @change="newVal => player.deaths = newVal"
+                      title="D"
+                      type="number"
+                      style="width: 3rem;"
+                      textAlign="left"/>
+          <Select :options="legalValues.awards.map(award => ({text: award, value: award}))"
+                  title="Award"
+                  isSearchable
+                  @change="newVal => {
+                    player.award = newVal;
+                    heroResetValue = Math.random().toString()
+                  }"
+                  style="width: 11rem;"
+                  @searchSelectedClicked="() => player.award = undefined"
+                  :resetValue="heroResetValue"
+                  :searchSelected="player.award"/>
+          <button @click="removePlayer(index)" style="margin-left: 10px;" class="iconButton">
+            <CloseIcon title=""/>
+          </button>
+        </div>
+      </div>
       <button @click="addPlayer" style="margin-top: 0.5rem;">
         + Add player
       </button>
@@ -319,6 +336,7 @@ export default {
       },
       inputsResetValue: null,
       mapResetValue: null,
+      heroResetValue: null,
     }
   },
 
@@ -409,6 +427,9 @@ export default {
       if (result.includes('Success')) { // LOL.
         this.isAddingGame = false
         this.newGame = this.makeDefaultEmptyGame()
+        this.mapResetValue = Math.random().toString()
+        this.heroResetValue = Math.random().toString()
+        this.inputsResetValue = Math.random().toString()
         this.fetchData()
       }
 
@@ -540,6 +561,7 @@ input {
 
 .scrolling-table {
   width: 100%;
+  overflow-x: auto;
 }
 
 .teamPlayers {
@@ -605,7 +627,6 @@ table {
   width: fit-content;
   border-collapse: collapse;
   display: block;
-  overflow-x: auto;
   white-space: nowrap;
 }
 
