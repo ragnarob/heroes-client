@@ -61,7 +61,9 @@
           <TextInput @change="newVal => player.name = newVal"
                       title="Name"
                       style="width: 9rem;"
+                      :value="player.name"
                       textAlign="left"/>
+
           <Select :options="legalValues.heroes.map(hero => ({text: hero, value: hero}))"
                   title="Hero"
                   isSearchable
@@ -73,21 +75,25 @@
                   @searchSelectedClicked="() => player.hero = undefined"
                   :resetValue="heroResetValue"
                   :searchSelected="player.hero"/>
+
           <TextInput @change="newVal => player.kills = newVal"
                       title="K"
                       type="number"
                       style="width: 3rem;"
                       textAlign="left"/>
+
           <TextInput @change="newVal => player.assists = newVal"
                       title="A"
                       type="number"
                       style="width: 3rem;"
                       textAlign="left"/>
+
           <TextInput @change="newVal => player.deaths = newVal"
                       title="D"
                       type="number"
                       style="width: 3rem;"
                       textAlign="left"/>
+
           <Select :options="legalValues.awards.map(award => ({text: award, value: award}))"
                   title="Award"
                   isSearchable
@@ -99,6 +105,7 @@
                   @searchSelectedClicked="() => player.award = undefined"
                   :resetValue="heroResetValue"
                   :searchSelected="player.award"/>
+
           <button @click="removePlayer(index)" style="margin-left: 10px;" class="iconButton">
             <CloseIcon title=""/>
           </button>
@@ -397,6 +404,7 @@ export default {
         return this.createEmptyPlayer(player)
       })
       window.scrollTo(0,0)
+      this.heroResetValue = Math.random().toString()
     },
 
     addPlayer () {
