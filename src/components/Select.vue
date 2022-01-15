@@ -471,10 +471,12 @@ p, label {
 input {
   box-sizing: border-box;
   width: 100%;
-  height: 100%;
+  height: $height;
   outline: none;
   font-size: 1rem;
   color: #333;
+  padding-top: 9px;  
+  padding-bottom: 9px;
   &::placeholder {
     filter: opacity(0.5);
   }
@@ -483,7 +485,7 @@ input {
 
 .titleText {
   position: absolute;
-  font-size: 0.75rem;
+  font-size: 0.85rem;
   top: 0;
   left: $paddingBig;
   @media (max-width: 900px) {
@@ -503,7 +505,6 @@ input {
   .clearContainer {
     position: absolute;
     right: 5px;
-    top: 12px;
   }
 
   &:focus {
