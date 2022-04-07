@@ -1,141 +1,244 @@
 <template>
-  <div class="home dark" style="display: flex; flex-direction: column; align-items: center;">
+  <div
+    class="home dark"
+    style="display: flex; flex-direction: column; align-items: center"
+  >
     <h1>Heroes of the Gløs</h1>
 
     <p v-if="!isDataLoaded">Loading data, hold on...</p>
 
-    <div v-else style="display: flex; flex-direction: column; align-items: center; width: 100%;" class="no-cursor">
+    <div
+      v-else
+      style="
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+      "
+      class="no-cursor"
+    >
       <div id="big-number-container" class="more-shadow-box">
         <div class="different-sized-text">
-          <span class="big-number">{{totalStats.games}} </span> <p>games</p>
+          <span class="big-number">{{ totalStats.games }} </span>
+          <p>games</p>
         </div>
         <div class="different-sized-text">
-          <span class="big-number">{{(Math.round(totalStats.winRate*1000))/10}}% </span> <p>win rate</p>
+          <span class="big-number"
+            >{{ Math.round(totalStats.winRate * 1000) / 10 }}%
+          </span>
+          <p>win rate</p>
         </div>
       </div>
 
-    <button v-if="!isAddingGame" @click="isAddingGame = true" style="margin: 10px 0 0 0; width: fit-content;" class="seethrough-button">
-      Add game
-    </button>
-
-    <div v-else id="upload" class="more-shadow-box" style="margin-top: 30px;">
-      <p><b>New game</b></p>
-      <div id="newGameFirstTable">
-        <div style="display: flex; gap: 1.5rem; justify-content: center; margin-top: 0.5rem; margin-bottom: -0.5rem;">
-          <Radio label="Victory" :currentValue="newGame.result" value="1"  @onChange="onResultChange"/>
-          <Radio label="Defeat" :currentValue="newGame.result" value="0"  @onChange="onResultChange"/>
-        </div>
-
-        <Select :options="legalValues.maps.map(map => ({text: map, value: map}))"
-                title="Map"
-                isSearchable
-                searchPlaceholder="Map"
-                @change="onMapSelect"
-                @searchSelectedClicked="() => newGame.map = undefined"
-                :resetValue="mapResetValue"
-                :searchSelected="newGame.map"
-                isFullWidth
-                style="width: 15rem;"/>
-
-        <Select :options="legalValues.gameTypes.map(gt => ({text: gt, value: gt}))"
-                title="Game type"
-                @change="onGameTypeChange"
-                :resetValue="inputsResetValue"
-                isFullWidth/> 
-
-        <DateTimePicker :value="newGame.date"
-                        @change="onDateChange"
-                        title="Date &amp; time"/>
-
-        <TextInput @change="newVal => newGamePassword = newVal"
-                    title="Password"
-                    textAlign="left"
-                    style="width: 100%;"/>
-      </div>
-
-      <p style="margin-top: 12px;">
-        <b>Players</b>
-      </p>
-      <div style="margin: 0.5rem 0; display: flex; flex-direction: column; gap: 0.75rem;">
-        <div v-for="(player, index) in newGame.team" :key="index" style="display: flex; gap: 0.5rem; align-items: flex-end;">
-          <TextInput @change="newVal => player.name = newVal"
-                      title="Name"
-                      style="width: 9rem;"
-                      :value="player.name"
-                      textAlign="left"/>
-
-          <Select :options="legalValues.heroes.map(hero => ({text: hero, value: hero}))"
-                  title="Hero"
-                  isSearchable
-                  @change="newVal => {
-                    player.hero = newVal;
-                    heroResetValue = Math.random().toString()
-                  }"
-                  style="width: 11rem;"
-                  @searchSelectedClicked="() => player.hero = undefined"
-                  :resetValue="heroResetValue"
-                  :searchSelected="player.hero"/>
-
-          <TextInput @change="newVal => player.kills = newVal"
-                      title="K"
-                      type="number"
-                      style="width: 3rem;"
-                      textAlign="left"/>
-
-          <TextInput @change="newVal => player.assists = newVal"
-                      title="A"
-                      type="number"
-                      style="width: 3rem;"
-                      textAlign="left"/>
-
-          <TextInput @change="newVal => player.deaths = newVal"
-                      title="D"
-                      type="number"
-                      style="width: 3rem;"
-                      textAlign="left"/>
-
-          <Select :options="legalValues.awards.map(award => ({text: award, value: award}))"
-                  title="Award"
-                  isSearchable
-                  @change="newVal => {
-                    player.award = newVal;
-                    heroResetValue = Math.random().toString()
-                  }"
-                  style="width: 11rem;"
-                  @searchSelectedClicked="() => player.award = undefined"
-                  :resetValue="heroResetValue"
-                  :searchSelected="player.award"/>
-
-          <button @click="removePlayer(index)" style="margin-left: 10px;" class="iconButton">
-            <CloseIcon title=""/>
-          </button>
-        </div>
-      </div>
-      <button @click="addPlayer" style="margin-top: 0.5rem;">
-        + Add player
+      <button
+        v-if="!isAddingGame"
+        @click="isAddingGame = true"
+        style="margin: 10px 0 0 0; width: fit-content"
+        class="seethrough-button"
+      >
+        Add game
       </button>
-      <div style="display: flex; flex-direction: row; margin-top: 1.5rem; gap: 1rem;">
-        <button @click="cancelAddingGame()">
-          Cancel
-        </button>
-        <button @click="submitGame">
-          Submit game
-        </button>
-      </div>
-    </div>
 
-      <div id="major-stats-container" style="width: 100%;">
+      <div v-else id="upload" class="more-shadow-box" style="margin-top: 30px">
+        <p><b>New game</b></p>
+        <div id="newGameFirstTable">
+          <div
+            style="
+              display: flex;
+              gap: 1.5rem;
+              justify-content: center;
+              margin-top: 0.5rem;
+              margin-bottom: -0.5rem;
+            "
+          >
+            <Radio
+              label="Victory"
+              :currentValue="newGame.result"
+              value="1"
+              @onChange="onResultChange"
+            />
+            <Radio
+              label="Defeat"
+              :currentValue="newGame.result"
+              value="0"
+              @onChange="onResultChange"
+            />
+          </div>
+
+          <Select
+            :options="
+              legalValues.maps.map((map) => ({ text: map, value: map }))
+            "
+            title="Map"
+            isSearchable
+            searchPlaceholder="Map"
+            @change="onMapSelect"
+            @searchSelectedClicked="() => (newGame.map = undefined)"
+            :resetValue="mapResetValue"
+            :searchSelected="newGame.map"
+            isFullWidth
+            style="width: 15rem"
+          />
+
+          <Select
+            :options="
+              legalValues.gameTypes.map((gt) => ({ text: gt, value: gt }))
+            "
+            title="Game type"
+            @change="onGameTypeChange"
+            :resetValue="inputsResetValue"
+            isFullWidth
+          />
+
+          <DateTimePicker
+            :value="newGame.date"
+            @change="onDateChange"
+            title="Date &amp; time"
+          />
+
+          <TextInput
+            @change="(newVal) => (newGamePassword = newVal)"
+            title="Password"
+            textAlign="left"
+            style="width: 100%"
+          />
+        </div>
+
+        <p style="margin-top: 12px">
+          <b>Players</b>
+        </p>
+        <div
+          style="
+            margin: 0.5rem 0;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+          "
+        >
+          <div
+            v-for="(player, index) in newGame.team"
+            :key="index"
+            style="display: flex; gap: 0.5rem; align-items: flex-end"
+          >
+            <TextInput
+              @change="(newVal) => (player.name = newVal)"
+              title="Name"
+              style="width: 9rem"
+              :value="player.name"
+              textAlign="left"
+            />
+
+            <Select
+              :options="
+                legalValues.heroes.map((hero) => ({ text: hero, value: hero }))
+              "
+              title="Hero"
+              isSearchable
+              @change="
+                (newVal) => {
+                  player.hero = newVal;
+                  heroResetValue = Math.random().toString();
+                }
+              "
+              style="width: 11rem"
+              @searchSelectedClicked="() => (player.hero = undefined)"
+              :resetValue="heroResetValue"
+              :searchSelected="player.hero"
+            />
+
+            <TextInput
+              @change="(newVal) => (player.kills = newVal)"
+              title="K"
+              type="number"
+              style="width: 3rem"
+              textAlign="left"
+            />
+
+            <TextInput
+              @change="(newVal) => (player.assists = newVal)"
+              title="A"
+              type="number"
+              style="width: 3rem"
+              textAlign="left"
+            />
+
+            <TextInput
+              @change="(newVal) => (player.deaths = newVal)"
+              title="D"
+              type="number"
+              style="width: 3rem"
+              textAlign="left"
+            />
+
+            <Select
+              :options="
+                legalValues.awards.map((award) => ({
+                  text: award,
+                  value: award,
+                }))
+              "
+              title="Award"
+              isSearchable
+              @change="
+                (newVal) => {
+                  player.award = newVal;
+                  heroResetValue = Math.random().toString();
+                }
+              "
+              style="width: 11rem"
+              @searchSelectedClicked="() => (player.award = undefined)"
+              :resetValue="heroResetValue"
+              :searchSelected="player.award"
+            />
+
+            <button
+              @click="removePlayer(index)"
+              style="margin-left: 10px"
+              class="iconButton"
+            >
+              <CloseIcon title="" />
+            </button>
+          </div>
+        </div>
+        <button @click="addPlayer" style="margin-top: 0.5rem">
+          + Add player
+        </button>
+        <div
+          style="
+            display: flex;
+            flex-direction: row;
+            margin-top: 1.5rem;
+            gap: 1rem;
+          "
+        >
+          <button @click="cancelAddingGame()">Cancel</button>
+          <button @click="submitGame">Submit game</button>
+        </div>
+      </div>
+
+      <div id="major-stats-container" style="width: 100%">
         <div class="total-stats-container shadow-box">
           <h3>Wins by game type</h3>
           <table class="scrolling-table">
-            <tr v-for="(data, gameType) in totalStats.winRatesByGameType" :key="gameType">
-              <td>{{gameType}}</td>
-              <td><span class="different-sized-text">
-                <span class="medium-number">{{data.games || '-'}}</span> <p>games</p>
-              </span></td>
-              <td><span class="different-sized-text">
-                <span class="medium-number">{{percentToString(data.winRate)}}</span> <p>win rate</p>
-              </span></td>
+            <tr
+              v-for="(data, gameType) in totalStats.winRatesByGameType"
+              :key="gameType"
+            >
+              <td>{{ gameType }}</td>
+              <td>
+                <span class="different-sized-text">
+                  <span class="medium-number">{{ data.games || "-" }}</span>
+                  <p>games</p>
+                </span>
+              </td>
+              <td>
+                <span class="different-sized-text">
+                  <span class="medium-number">{{
+                    percentToString(data.winRate)
+                  }}</span>
+                  <p>win rate</p>
+                </span>
+              </td>
             </tr>
           </table>
         </div>
@@ -144,13 +247,21 @@
           <h3>Wins by map</h3>
           <table class="scrolling-table">
             <tr v-for="mapData in totalStats.winRatesByMap" :key="mapData.map">
-              <td style="text-align: left;">{{mapData.map}}</td>
-              <td><span class="different-sized-text">
-                <span class="medium-number">{{mapData.games}}</span> <p>games</p>
-              </span></td>
-              <td><span class="different-sized-text">
-                <span class="medium-number">{{percentToString(mapData.winRate)}}</span> <p>win rate</p>
-              </span></td>
+              <td style="text-align: left">{{ mapData.map }}</td>
+              <td>
+                <span class="different-sized-text">
+                  <span class="medium-number">{{ mapData.games }}</span>
+                  <p>games</p>
+                </span>
+              </td>
+              <td>
+                <span class="different-sized-text">
+                  <span class="medium-number">{{
+                    percentToString(mapData.winRate)
+                  }}</span>
+                  <p>win rate</p>
+                </span>
+              </td>
             </tr>
           </table>
         </div>
@@ -158,14 +269,26 @@
         <div class="total-stats-container shadow-box">
           <h3>Wins by # of players</h3>
           <table class="scrolling-table">
-            <tr v-for="num in [2,3,4,5]" :key="num">
-              <td>{{num}} players</td>
-              <td><span class="different-sized-text">
-                <span class="medium-number">{{totalStats.winratesByPlayerCounts[num].games || '-'}}</span> <p>games</p>
-              </span></td>
-              <td><span class="different-sized-text">
-                <span class="medium-number">{{percentToString(totalStats.winratesByPlayerCounts[num].winRate)}}</span> <p>win rate</p>
-              </span></td>
+            <tr v-for="num in [2, 3, 4, 5]" :key="num">
+              <td>{{ num }} players</td>
+              <td>
+                <span class="different-sized-text">
+                  <span class="medium-number">{{
+                    totalStats.winratesByPlayerCounts[num].games || "-"
+                  }}</span>
+                  <p>games</p>
+                </span>
+              </td>
+              <td>
+                <span class="different-sized-text">
+                  <span class="medium-number">{{
+                    percentToString(
+                      totalStats.winratesByPlayerCounts[num].winRate
+                    )
+                  }}</span>
+                  <p>win rate</p>
+                </span>
+              </td>
             </tr>
           </table>
         </div>
@@ -178,7 +301,7 @@
             <tr class="no-hover">
               <th>Name</th>
               <th>#</th>
-              <th style="padding-left: 12px;">Win %</th>
+              <th style="padding-left: 12px">Win %</th>
               <th>MVP %</th>
               <th>Award %</th>
               <th>K A D</th>
@@ -188,22 +311,33 @@
             </tr>
           </thead>
           <tr v-for="player in playerStats" :key="player.name">
-            <td><p @click="selectPlayer(player)" class="clickable">
-              <b>{{player.name}}</b>
-            </p></td>
-            <td>{{player.games}}</td>
-            <td style="padding-left: 12px;"><b>{{player.winRate}}%</b> ({{player.wins}})</td>
-            <td>{{player.mvpPercentage}}%</td>
-            <td>{{player.awardPercentage}}%</td>
-            <td>{{player.avgKills}} / {{player.avgAssists}} / {{player.avgDeaths}}</td>
-            <td>{{player.avgKD}}</td>
-            <td>{{player.avgKAD}}</td>
+            <td>
+              <p @click="selectPlayer(player)" class="clickable">
+                <b>{{ player.name }}</b>
+              </p>
+            </td>
+            <td>{{ player.games }}</td>
+            <td style="padding-left: 12px">
+              <b>{{ player.winRate }}%</b> ({{ player.wins }})
+            </td>
+            <td>{{ player.mvpPercentage }}%</td>
+            <td>{{ player.awardPercentage }}%</td>
+            <td>
+              {{ player.avgKills }} / {{ player.avgAssists }} /
+              {{ player.avgDeaths }}
+            </td>
+            <td>{{ player.avgKD }}</td>
+            <td>{{ player.avgKAD }}</td>
             <td>
               <table id="fav-heroes-table">
-                <tr v-for="hero in favHeroes(player.heroes)" :key="hero.name" class="no-hover">
-                  <td style="padding: 0">{{hero.name}}</td>
-                  <td style="padding: 0 0 0 8px;">{{hero.games}} games</td>
-                  <td style="padding: 0 0 0 8px;">{{hero.winRate}}% win</td>
+                <tr
+                  v-for="hero in favHeroes(player.heroes)"
+                  :key="hero.name"
+                  class="no-hover"
+                >
+                  <td style="padding: 0">{{ hero.name }}</td>
+                  <td style="padding: 0 0 0 8px">{{ hero.games }} games</td>
+                  <td style="padding: 0 0 0 8px">{{ hero.winRate }}% win</td>
                 </tr>
               </table>
             </td>
@@ -211,101 +345,133 @@
         </table>
       </div>
 
-      <div v-if="selectedPlayer != null" class="total-stats-container shadow-box" id="selected-player-stats">
-        <div style="display: flex; flex-direction: row; justify-content; center; margin: 0 auto 0 auto; width: fit-content;">
-          <h3 style="margin: 0;">{{selectedPlayer.name}} details</h3>
-          <button @click="selectPlayer(null)" class="seethrough-button-dark" style="width: fit-content; height: fit-content; margin-left: 20px;">
+      <div
+        v-if="selectedPlayer != null"
+        class="total-stats-container shadow-box"
+        id="selected-player-stats"
+      >
+        <div
+          style="display: flex; flex-direction: row; justify-content; center; margin: 0 auto 0 auto; width: fit-content;"
+        >
+          <h3 style="margin: 0">{{ selectedPlayer.name }} details</h3>
+          <button
+            @click="selectPlayer(null)"
+            class="seethrough-button-dark"
+            style="width: fit-content; height: fit-content; margin-left: 20px"
+          >
             Close
           </button>
         </div>
 
-        <div style="display: flex; flex-direction: row; flex-wrap: wrap; justify-content: center;">
+        <div
+          style="
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            justify-content: center;
+          "
+        >
           <div style="margin: 10px">
             <h4>All hero stats</h4>
             <table class="scrolling-table">
               <thead>
                 <tr class="no-hover">
                   <th>Hero</th>
-                  <th style="padding-right: 4px;">#</th>
-                  <th style="padding-left: 4px;">Win %</th>
+                  <th style="padding-right: 4px">#</th>
+                  <th style="padding-left: 4px">Win %</th>
                   <th>K A D</th>
                 </tr>
               </thead>
               <tr v-for="hero in selectedPlayer.heroes" :key="hero.name">
-                <td style="text-align: left;">{{hero.name}}</td>
-                <td>{{hero.games}}</td>
-                <td>{{hero.winRate}}%</td>
-                <td>{{hero.avgKills}} / {{hero.avgAssists}} / {{hero.avgDeaths}}</td>
+                <td style="text-align: left">{{ hero.name }}</td>
+                <td>{{ hero.games }}</td>
+                <td>{{ hero.winRate }}%</td>
+                <td>
+                  {{ hero.avgKills }} / {{ hero.avgAssists }} /
+                  {{ hero.avgDeaths }}
+                </td>
               </tr>
             </table>
           </div>
 
-          <div style="margin: 10px;">
+          <div style="margin: 10px">
             <h4>Awards</h4>
             <table class="scrolling-table">
               <tr v-for="award in selectedPlayer.awards" :key="award.award">
-                <td style="text-align: left;">{{award.award}}</td>
-                <td>{{award.percentage}}%</td>
+                <td style="text-align: left">{{ award.award }}</td>
+                <td>{{ award.percentage }}%</td>
               </tr>
             </table>
           </div>
 
-          <div style="margin: 10px;">
+          <div style="margin: 10px">
             <h4>Roles</h4>
             <p>Coming soon!</p>
           </div>
         </div>
       </div>
 
-
-
       <div class="total-stats-container shadow-box" id="teams-stats">
         <h3>Teams stats</h3>
-        <p style="text-align: center; margin: 0 auto 0.5rem auto; font-size: 12px;">
+        <p
+          style="
+            text-align: center;
+            margin: 0 auto 0.5rem auto;
+            font-size: 12px;
+          "
+        >
           Click a team to initiate a new game registration with players
         </p>
-        <table class="scrolling-table" style="margin: auto;">
+        <table class="scrolling-table" style="margin: auto">
           <thead>
             <tr class="no-hover">
               <th>Players</th>
               <th>Games</th>
-              <th style="padding-left: 8px;">Win %</th>
+              <th style="padding-left: 8px">Win %</th>
             </tr>
           </thead>
           <tr v-for="team in teamStats" :key="team.playersString">
-            <td style="text-align: left;">
-              <p class="teamPlayers clickable clickable-light" @click="initiateNewGameWithPlayers(team.playersString)">
-                {{team.playersString}}
+            <td style="text-align: left">
+              <p
+                class="teamPlayers clickable clickable-light"
+                @click="initiateNewGameWithPlayers(team.playersString)"
+              >
+                {{ team.playersString }}
               </p>
             </td>
-            <td>{{team.games}}</td>
-            <td style="padding-left: 8px;">{{team.winPercent}}%</td>
+            <td>{{ team.games }}</td>
+            <td style="padding-left: 8px">{{ team.winPercent }}%</td>
           </tr>
         </table>
       </div>
 
-
-
-
-
       <div class="total-stats-container shadow-box" id="recent-games-container">
         <h3>Most recent 10 games</h3>
 
-        <div v-for="(game, index) in recentGames" :key="index" class="one-game" :class="{'lose-game': !game.result, 'win-game': game.result}">
+        <div
+          v-for="(game, index) in recentGames"
+          :key="index"
+          class="one-game"
+          :class="{ 'lose-game': !game.result, 'win-game': game.result }"
+        >
           <div class="title">
-            <div style="width: 100%;">
-              <p class="no-cursor">{{game.map}} - {{game.result ? 'Victory' : 'Defeat'}}</p>
-              <p style="font-size: 12px; margin-left: 2px;" class="no-cursor">
-                {{prettyDate(game.date)}}
+            <div style="width: 100%">
+              <p class="no-cursor">
+                {{ game.map }} - {{ game.result ? "Victory" : "Defeat" }}
+              </p>
+              <p style="font-size: 12px; margin-left: 2px" class="no-cursor">
+                {{ prettyDate(game.date) }}
               </p>
             </div>
           </div>
           <table class="players">
             <tr v-for="player in game.team" :key="player.name" class="no-hover">
-              <td>{{player.name}}</td>
-              <td>{{player.hero}}</td>
-              <td>{{player.kills}} / {{player.assists}} / {{player.deaths}}</td>
-              <td>{{player.award || '-'}}</td>
+              <td>{{ player.name }}</td>
+              <td>{{ player.hero }}</td>
+              <td>
+                {{ player.kills }} / {{ player.assists }} / {{ player.deaths }}
+              </td>
+              <td>{{ player.award || "-" }}</td>
             </tr>
           </table>
         </div>
@@ -516,27 +682,54 @@ export default {
 <style lang="scss">
 @import "../scss/colors.scss";
 
-input, select {
+input,
+select {
   margin: 0;
   padding: 0;
 }
 
 .body-fall {
-  background: #FC5C7D;  /* fallback for old browsers */
-  background: -webkit-linear-gradient(to bottom right, #f55353, #e9c439);  /* Chrome 10-25, Safari 5.1-6 */
-  background: linear-gradient(to bottom right, #f55353, #e9c439); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  background: #fc5c7d; /* fallback for old browsers */
+  background: -webkit-linear-gradient(
+    to bottom right,
+    #f55353,
+    #e9c439
+  ); /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(
+    to bottom right,
+    #f55353,
+    #e9c439
+  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 }
 
 .body-winter {
-  background: $seasonColor1;  /* fallback for old browsers */
-  background: -webkit-linear-gradient(to bottom right, $seasonColor1, #9773eb, $seasonColor2);  /* Chrome 10-25, Safari 5.1-6 */
-  background: linear-gradient(to bottom right, $seasonColor1, #9773eb, $seasonColor2); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  background: $seasonColor1; /* fallback for old browsers */
+  background: -webkit-linear-gradient(
+    to bottom right,
+    $seasonColor1,
+    $seasonColor2,
+    $seasonColor3
+  ); /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(
+    to bottom right,
+    $seasonColor1,
+    $seasonColor2,
+    $seasonColor3
+  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 }
 
 .body-spring {
-  background: #22c1c3;  /* fallback for old browsers */
-  background: -webkit-linear-gradient(to bottom right, #22c1c3, #fdbb2d);  /* Chrome 10-25, Safari 5.1-6 */
-  background: linear-gradient(to bottom right, #22c1c3, #fdbb2d); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  background: #22c1c3; /* fallback for old browsers */
+  background: -webkit-linear-gradient(
+    to bottom right,
+    #22c1c3,
+    #fdbb2d
+  ); /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(
+    to bottom right,
+    #22c1c3,
+    #fdbb2d
+  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 }
 
 .cursorPointer {
@@ -545,12 +738,17 @@ input, select {
   }
 }
 
-h1, h2, h3, h4, p {
-  margin: 0; padding: 0;
+h1,
+h2,
+h3,
+h4,
+p {
+  margin: 0;
+  padding: 0;
   width: fit-content;
 }
 h1 {
-  font-family: 'Arvo', serif;
+  font-family: "Arvo", serif;
   margin: auto;
   padding-top: 10px;
   text-align: center;
@@ -563,7 +761,7 @@ h1 {
 }
 
 input {
-  font-family: 'Montserrat', sans-serif;
+  font-family: "Montserrat", sans-serif;
   font-size: 1rem;
 }
 
@@ -588,11 +786,11 @@ input {
 
 .one-game {
   margin: 8px auto;
-  background: rgba(255,255,255, 0.15);
+  background: rgba(255, 255, 255, 0.15);
   padding: 4px;
 
   &:hover {
-    background: rgba(255,255,255, 0.35);
+    background: rgba(255, 255, 255, 0.35);
   }
   .players {
     font-size: 12px;
@@ -604,7 +802,7 @@ input {
 }
 tr:not(.no-hover) {
   &:hover {
-    background: rgba(255,255,255, 0.35);
+    background: rgba(255, 255, 255, 0.35);
   }
 }
 .no-cursor {
@@ -675,7 +873,7 @@ h4 {
   margin: auto;
 }
 
-.material-design-icon { 
+.material-design-icon {
   display: inline-flex;
   align-self: center;
   position: relative;
@@ -683,7 +881,7 @@ h4 {
   width: 1rem;
 }
 
-.material-design-icon>.material-design-icon__svg {
+.material-design-icon > .material-design-icon__svg {
   height: 1rem;
   width: 1rem;
   fill: currentColor;
@@ -692,15 +890,19 @@ h4 {
 }
 
 .shadow-box {
-  box-shadow: 0 8px 16px 0px rgba(25, 25, 25, 0.12), 0px 8px 64px 0px rgba(25, 25, 25, 0.25);
+  box-shadow: 0 8px 16px 0px rgba(25, 25, 25, 0.12),
+    0px 8px 64px 0px rgba(25, 25, 25, 0.25);
   &:hover {
-    box-shadow: 0 8px 16px 0px rgba(25, 25, 25, 0.20), 0px 10px 70px 0px rgba(25, 25, 25, 0.40);
+    box-shadow: 0 8px 16px 0px rgba(25, 25, 25, 0.2),
+      0px 10px 70px 0px rgba(25, 25, 25, 0.4);
   }
 }
 .more-shadow-box {
-  box-shadow: 0 8px 16px 0px rgba(25, 25, 25, 0.20), 0px 8px 64px 0px rgba(25, 25, 25, 0.40);
+  box-shadow: 0 8px 16px 0px rgba(25, 25, 25, 0.2),
+    0px 8px 64px 0px rgba(25, 25, 25, 0.4);
   &:hover {
-    box-shadow: 0 8px 16px 0px rgba(25, 25, 25, 0.28), 0px 10px 78px 0px rgba(25, 25, 25, 0.48);
+    box-shadow: 0 8px 16px 0px rgba(25, 25, 25, 0.28),
+      0px 10px 78px 0px rgba(25, 25, 25, 0.48);
   }
 }
 
@@ -715,18 +917,18 @@ h4 {
 }
 
 .seethrough-button-dark {
-  background-color: rgba(111,111,111,0.15);
+  background-color: rgba(111, 111, 111, 0.15);
   color: #333;
   font-size: 16px;
   margin-top: 2px;
   border: none;
   &:hover {
     background-color: transparent;
-  } 
+  }
 }
 
 #upload {
-  background-color: rgba(0,0,0, 0.75);
+  background-color: rgba(0, 0, 0, 0.75);
   color: white;
   width: fit-content;
   margin: auto;
@@ -799,7 +1001,9 @@ h4 {
 }
 
 .different-sized-text {
-  display: flex; flex-direction: row; align-items: center;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
   p {
     margin-left: 6px;
   }
@@ -848,13 +1052,13 @@ button {
   border-radius: 4px;
   background-color: #fff;
   color: black;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
 
   &:hover {
     cursor: pointer;
-    box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
     &.button-disabled {
-      box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
     }
   }
 }
@@ -862,24 +1066,26 @@ button {
 button {
   background: rgba(255, 255, 255, 0.9);
   color: #000;
-  font-family: 'Montserrat', sans-serif;
+  font-family: "Montserrat", sans-serif;
   font-size: 1rem;
   font-weight: 400;
   padding: 0.5rem 1rem;
   border-radius: 6px;
   display: flex;
   align-items: center;
-  box-shadow: 0 4px 10px 0 rgba(25, 25, 25, 0.06), 0 4px 16px 0 rgba(25, 25, 25, 0.15);
+  box-shadow: 0 4px 10px 0 rgba(25, 25, 25, 0.06),
+    0 4px 16px 0 rgba(25, 25, 25, 0.15);
   span {
     margin-bottom: -5px;
     margin-right: 0.3rem;
   }
-  
+
   background: transparentize($color: $theme1, $amount: 0.5);
   color: white;
   &:hover {
     background: transparentize($color: $theme1, $amount: 0.2);
-    box-shadow: 0 8px 16px 0 rgba(25,25,25,.12), 0 8px 32px 0 rgba(25,25,25,.25);
+    box-shadow: 0 8px 16px 0 rgba(25, 25, 25, 0.12),
+      0 8px 32px 0 rgba(25, 25, 25, 0.25);
   }
 
   transition: all 100ms;
