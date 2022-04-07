@@ -475,16 +475,14 @@
         >
           <div class="title">
             <div style="width: 100%">
-              <p class="no-cursor">
-                {{ game.map }} - {{ game.result ? "Victory" : "Defeat" }}
-              </p>
-              <p style="font-size: 12px; margin-left: 2px" class="no-cursor">
+              <p>{{ game.map }} - {{ game.result ? "Victory" : "Defeat" }}</p>
+              <p style="font-size: 12px; margin-left: 2px">
                 {{ prettyDate(game.date) }}
               </p>
             </div>
           </div>
           <table class="players">
-            <tr v-for="player in game.team" :key="player.name" class="no-hover">
+            <tr v-for="player in game.team" :key="player.name">
               <td>{{ player.name }}</td>
               <td>{{ player.hero }}</td>
               <td>
