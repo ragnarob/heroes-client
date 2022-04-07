@@ -605,7 +605,7 @@ export default {
         'gameData': {...this.newGame, result: Number(this.newGame.result)},
         'password': this.newGamePassword
       }
-      console.log("Passordet er 'Orphea' lol")
+      console.log("Passordet er 'o' lol")
 
       let result = await fetch('/games', {
         method: 'POST',
@@ -736,6 +736,8 @@ select {
     $seasonColor2,
     $seasonColor3
   ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  background-repeat: no-repeat;
+  background-attachment: fixed;
 }
 
 .body-spring {
@@ -750,6 +752,8 @@ select {
     #22c1c3,
     #fdbb2d
   ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  background-repeat: no-repeat;
+  background-attachment: fixed;
 }
 
 .cursorPointer {
