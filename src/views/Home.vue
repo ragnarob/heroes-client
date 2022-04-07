@@ -422,6 +422,15 @@
         >
           Click a team to initiate a new game registration with players
         </p>
+        <p
+          style="
+            text-align: center;
+            margin: 0 auto 0.75rem auto;
+            font-size: 12px;
+          "
+        >
+          Teams with &lt;4 games are hidden
+        </p>
         <table class="scrolling-table" style="margin: auto">
           <thead>
             <tr class="no-hover">
@@ -446,13 +455,23 @@
       </div>
 
       <div class="total-stats-container shadow-box" id="recent-games-container">
-        <h3>Most recent 10 games</h3>
+        <h3>Most recent 20 games</h3>
+        <p
+          style="
+            text-align: center;
+            margin: 0 auto 0.5rem auto;
+            font-size: 12px;
+          "
+        >
+          Click a game to register a new result
+        </p>
 
         <div
           v-for="(game, index) in recentGames"
           :key="index"
           class="one-game"
           :class="{ 'lose-game': !game.result, 'win-game': game.result }"
+          @click="initiateNewGameWithPlayers(game.playersString)"
         >
           <div class="title">
             <div style="width: 100%">
@@ -627,7 +646,10 @@ export default {
 
       this.totalStats = allGames.totalStats
       this.playerStats = allGames.playerStats
-      this.recentGames = allGames.recentGames
+      this.recentGames = allGames.recentGames.map(recentGame => ({
+        ...recentGame,
+        playersString: recentGame.team.map(player => player.name).join(', ')
+      }))
       this.teamStats = allGames.teamStats.sort((ts1, ts2) => ts1.games > ts2.games ? -1 : 1)
 
       for (let player of this.playerStats) {
@@ -791,6 +813,7 @@ input {
 
   &:hover {
     background: rgba(255, 255, 255, 0.35);
+    cursor: pointer;
   }
   .players {
     font-size: 12px;
